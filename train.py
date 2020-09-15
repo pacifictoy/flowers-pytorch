@@ -1,6 +1,8 @@
 import argparse
 from mymodel import MyModel
 
+#SAMPLE: python train.py flowers --gpu --epochs 2
+
 parser = argparse.ArgumentParser(description='Flower Image Trainer')
 
 parser.add_argument('data_directory', action='store', type=str, help='data directory for training, validation, and test')
@@ -13,10 +15,10 @@ parser.add_argument('--save_dir', action='store', type=str, help='save model int
 
 args = parser.parse_args()
 
-mm = MyModel(use_gpu=args.gpu)
+mm = MyModel(use_gpu=args.gpu, epochs=args.epochs)
 model = mm.create_model(base_model=args.arch, hidden_unit_num=args.hidden_units)
 optimizer = mm.create_optimizer(model, learning_rate=args.learning_rate)
-mm.train_model(model, optimizer, epoch=args.epochs)
+mm.train_model(model, optimizer)
 mm.save_checkpoint(model, optimizer)
 if args.save_dir != None:
     mm.save_checkpoint(model, optimizer, dir=args.save_dir)

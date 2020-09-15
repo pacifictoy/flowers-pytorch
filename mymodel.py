@@ -13,13 +13,15 @@ import json
 
 
 class MyModel:
-    def __init__(self, category_name_filepath='cat_to_name.json', use_gpu=False, data_dir='flowers'):
+    def __init__(self, category_name_filepath='cat_to_name.json', use_gpu=False, data_dir='flowers', epochs=5):
         if use_gpu and torch.cuda.is_available():
             self.device = "cuda"
+            print("we are using GPU!")
         else:
             if use_gpu and not torch.cuda.is_available():
                 print('not using gpu despite instructed because gpu is not available')
             self.device = "cpu"
+            print("we are using cpu")
         self.cat_to_name = None
         self.class_to_idx = None
         self.train_transforms = None
@@ -29,6 +31,7 @@ class MyModel:
         self.test_dataloader = None
         self.data_dir = data_dir
         self.init_data(category_name_filepath)
+        self.epochs = epochs
 
     def init_data(self, category_name_filepath):
         train_dir = self.data_dir + '/train'
@@ -98,12 +101,12 @@ class MyModel:
         print('optimizer created')
         return optimizer
 
-    def train_model(self, model, optimizer, epochs=5):
-        running_loss = 0
+    def train_model(self, model, optimizer):
         criterion = nn.NLLLoss()
         with active_session():
-            for epoch in range(epochs):
+            for epoch in range(self.epochs):
                 train_num = 0
+                running_loss = 0
                 for inputs, labels in self.train_dataloader:
 
                     inputs, labels = inputs.to(self.device), labels.to(self.device)
@@ -135,7 +138,7 @@ class MyModel:
                             equals = top_class == labels.view(*top_class.shape)
                             accuracy += torch.mean(equals.type(torch.FloatTensor))
 
-                    print(f"Epoch: {epoch + 1} / {epochs}"
+                    print(f"Epoch: {epoch + 1} / {self.epochs}"
                           f"Training Loss: {running_loss / len(self.train_dataloader):.3f}"
                           f"Validation Loss: {test_loss / len(self.validation_dataloader):.3f}"
                           f"Validation Accuracy: {accuracy / len(self.validation_dataloader):.3f}"
@@ -172,12 +175,14 @@ class MyModel:
         }
         filepath = dir+'/checkpoint.pth'
         torch.save(checkpoint, filepath)
+        
+        print("Checkpoint saved!")
 
     def load_checkpoint(self, filepath):
-        if self.device == 'gpu':
+        if self.device == 'cuda':
             checkpoint = torch.load(filepath)
         else:
-            checkpoint = torch.load(filepath, map_location=torch.device('cpu'))
+            checkpoint = torch.load(filepath, map_location='cpu')
         model = self.create_model()
         model.load_state_dict(checkpoint['model_dict'])
         optimizer = self.create_optimizer(model)
