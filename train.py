@@ -9,13 +9,11 @@ parser.add_argument('--arch', action='store', type=str, help='base model archite
 parser.add_argument('--epochs', action='store', type=int, help='how many epochs to train', default=1)
 parser.add_argument('--learning_rate', action='store', type=float, help='learning rate', default=0.01)
 parser.add_argument('--hidden_units', action='store', type=int, help='hidden unit', default=4096)
-parser.add_argument('--save_dir', action='store', type=str, help='save model into file')
+parser.add_argument('--save_dir', action='store', type=str, help='save model into file', default='.')
 
 args = parser.parse_args()
 
-print(args)
-
-# mm = MyModel(use_gpu=args.gpu)
-# model = mm.create_model(base_model=args.arch, hidden_unit_num=args.hidden_units)
-# optimizer = mm.create_optimizer(model, learning_rate=args.learning_rate)
-# mm.train_model(model, optimizer, epoch=args.epochs)
+mm = MyModel(use_gpu=args.gpu)
+model = mm.create_model(base_model=args.arch, hidden_unit_num=args.hidden_units)
+optimizer = mm.create_optimizer(model, learning_rate=args.learning_rate)
+mm.train_model(model, optimizer, epoch=args.epochs)
