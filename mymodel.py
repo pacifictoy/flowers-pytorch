@@ -138,7 +138,7 @@ class MyModel:
                     print(f"Epoch: {epoch + 1} / {epochs}"
                           f"Training Loss: {running_loss / len(self.train_dataloader):.3f}"
                           f"Validation Loss: {test_loss / len(self.validation_dataloader):.3f}"
-                          f"Validation Accuracy: {accuracy / len(validation_dataloader):.3f}"
+                          f"Validation Accuracy: {accuracy / len(self.validation_dataloader):.3f}"
                           )
         print("======Done Training Model, YAY!=======")
 
