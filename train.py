@@ -18,3 +18,5 @@ model = mm.create_model(base_model=args.arch, hidden_unit_num=args.hidden_units)
 optimizer = mm.create_optimizer(model, learning_rate=args.learning_rate)
 mm.train_model(model, optimizer, epoch=args.epochs)
 mm.save_checkpoint(model, optimizer)
+if args.save_dir != None:
+    mm.save_checkpoint(model, optimizer, dir=args.save_dir)
